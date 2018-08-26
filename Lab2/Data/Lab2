@@ -1,0 +1,12 @@
+
+library(readr)
+
+
+# leer archivo  train 
+train <- read_csv("C:/Users/jorge/Desktop/all/train.csv")
+View(train)
+
+
+numTRain <- train[unlist(lapply(train, is.numeric)) ,]
+numTRain <- unlist(lapply(train, is.numeric))
+train[numTRain,]
