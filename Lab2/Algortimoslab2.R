@@ -1,6 +1,6 @@
 #Universidad del Valle de Guatemala
 #Jorge Suchite 15293
-#laboratorio 2 de Data Science
+#laboratorio 2 de Data Science (algo sad)
 
 library(foreign)
 library(readr)
@@ -8,7 +8,8 @@ library(class)
 library(caret)
 
 
-
+################################################################################
+############################### leyendo las cosas para poder utilizarlas########
 
 precio<- read_csv("C:/Users/jorge/Desktop/goku/Lab2/Data/sample_submission.csv")
 View(sample_submission)
@@ -19,30 +20,24 @@ View(test)
 train <- read_csv("C:/Users/jorge/Desktop/goku/Lab2/Data/train.csv")
 View(train)
 
+###############################################################################
 
+datause<- train[,(unlist(lapply(train, is.numeric)))]
+datause$Id <- NULL #eliminamos el ID, que no representa una escala
+View(datause)
 
+################Particionando los datos en conjunto de entrenamiento y prueba###
 
-set.seed(1460)
+set.seed(55)
+porciento <- 60/100 #Porciento en el que se partira la poblacion
+thanos<-sample(1:nrow(datause),porciento*nrow(datause))#hacemos la thanos para elegir a los datos
 
-#se parte la dataseed
+trainSet<-datause[thanos,] #Obtengo las filas de los elementos que estan en el sector de muestra
+testestSet<-datause[-thanos,] #Obtengo las filas de los elementos que no están en el vector de muestra
 
-porciento <- 60/100 #Porciento en el que se partirÃ¡n la data
-
-################ siempre se tiene que encontrar las numericas y las no porque siempre da error
-numericTrain <- train[,(unlist(lapply(train, is.numeric)))]
-#se obtienen las   NO numericas
-noNumericTrain <- train[,!(unlist(lapply(train, is.numeric)))]
-
-muestra<-sample(1:nrow(noNumericTrain),porciento*nrow(numericTrain))#Muestra aleatoria de numeros de un vector
-
-View(numericTrain)
-View(noNumericTrain)
-
-trainSet<-numericTrain[muestra,] #Obtengo las filas de los elementos que estan en el sector de muestra
-testSet<-numericTrain[-muestra,] #Obtengo las filas de los elementos que no estÃ¡n en el vector de muestra
-
+ 
 View(trainSet)
-View(testSet)
+View(testestSet)
 
 ###################################################
 
@@ -58,39 +53,17 @@ View(testSet)
 # debido al codigo excesivo, solo se mostrara una ejemplificacion en uno de
 # los casos. Todo lo demas, estara en el pdf 
 
-colnames(testSet)[14] <- "Unpiso"
-colnames(testSet)[15] <- "dospiso"
+modelineal<-lm(SalePrice~., data = trainSet)
+summary(modelineal)
 
-modeloLinealSimple<-lm(SalePrice~PoolArea, data = testSet)
-summary(modeloLinealSimple)
+View(testestSet)
 
-#predicción
-prediccion<-predict(modeloLinealSimple,newdata = testSet[,2:ncol(testSet)])
- 
-#Ver la diferencia entre lo real y lo predicho
-dif<-abs(prediccion-testSet$SalePrice)
-porcentaje <- ((prediccion - testSet$SalePrice ) /(testSet$SalePrice)*100)
-sinna <- na.omit(porcentaje)
-mean(sinna)
-View(testSet) 
+#Calculamos la prediccion
+prediccion<-predict(modelineal,newdata = testestSet[1:36])
+testestSet$PricePred<-prediccion
+dif<-abs(testestSet$PricePred-testestSet$SalePrice)
+
+testestSet$mpgPred <-NULL
 
 
 
-############################################################################################
-###################### Modelo KNN ##########################################################
-# Las predicciones se hicieron a 13 variables contra el precio estimado
-# debido al codigo excesivo, solo se mostrara una ejemplificacion en uno de
-# los casos. Todo lo demas, estara en el pdf .
-#Para predecir el precio
-#Con class
-
-library(class)
-predKnn<-knn(trainSet[,c(1:876,10:11)],testSet[,c(1:584,10:11)],as.factor(trainSet$am),k=24)
-cfm<-confusionMatrix(as.factor(testSet$SalePrice),predKnn)
-cfm
-
-View(trainSet)
-
-
-
- 
