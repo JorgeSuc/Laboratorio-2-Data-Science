@@ -64,7 +64,7 @@ dif<-abs(testestSet$PricePred-testestSet$SalePrice)
 View(dif
      )
 
-testestSet$mpgPred <-NULL
+ 
 
 #########################################################
 
@@ -111,11 +111,13 @@ difdura<-abs(testdatito$PricePred-testdatito$SalePrice)
 
 # nota: Las categoricas no se les puede hacer la knn por lo mismo, se tratará de convertirla a numerica 
 
-# 1 - minimo
-# 2 - medio bajo
-# 3 - medio
-# 4 - alto
-# 5 brutal
+# 1 - 
+# 2 - 
+# 3 - 
+# 4 - 
+# 5 
+
+# rango de valores
 
 
 
@@ -166,7 +168,7 @@ lrx8 <- trainControl(method = "repeatedcv",
 
 
 knnTrain <- train(Prec~., data = testdatito, method = "knn",
-                  trControl=trctrl,
+                  trControl=lrx8,
                   preProcess = c("center", "scale"), tuneLength=10)
 
 predknn<-predict(knnTrain,newdata = testdatito[,c(1:16)])
